@@ -1,0 +1,5 @@
+PROJECT(SOLVERS)
+SET(CMAKE_BUILD_TYPE Release)
+ADD_EXECUTABLE(kakuro kakuro.cc)
+ADD_EXECUTABLE(sudoku sudoku.cc)
+ADD_EXECUTABLE(killer-sudoku killer-sudoku.cc)

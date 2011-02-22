@@ -1,0 +1,125 @@
+All programs in this package are
+
+  Copyright (c) 2005 Zeljko Vrba <zvrba@globalnet.hr>
+
+  Permission is hereby granted, free of charge, to any person obtaining
+  a copy of this software and associated documentation files (the
+  "Software"), to deal in the Software without restriction, including
+  without limitation the rights to use, copy, modify, merge, publish,
+  distribute, sublicense, and/or sell copies of the Software, and to
+  permit persons to whom the Software is furnished to do so, subject to
+  the following conditions:
+
+  The above copyright notice and this permission notice shall be
+  included in all copies or substantial portions of the Software.
+
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+  EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+  MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+  NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+  LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+  OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+  WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+Run make (GNU make required) to build the programs. Each program accepts
+on the command-line a single argument: the name of the input file, and
+prints solutions, separated by blank lines, on stdout. If no output is
+produced, there is no solution (no special message is given in such case).
+
+You can edit the Makefile and set CCADDFLAGS to optimizing flags, and/or
+change the CC variable to set the compiler.
+
+Sudoku solver
+=============
+The input format for this program is free-formed. Important characters in
+the input are . (empty cell) and digits 0-9. There must be exactly 81 such
+character. All other characters are IGNORED. This allows you to load puzzles
+in the format as given on the following links:
+
+http://angusj.com/sudoku/
+http://angusj.com/sudoku/ss_undefined_2.zip
+
+I can't reproduce these files in the distribution as they are copyrighted.
+Some example inputs are su*.txt. su1.txt has 6 distinct solutions (so it's
+not a "valid" sudoku puzzle, but the program can find all of them).
+su2.txt is the "Daily Sudoku" (classic) from http://www.dailysudoku.com/
+at the day 2005-12-31. su3.txt is taken from the http://act365.com/sudoku/
+puzzle gallery, "Unsolvable" level.
+
+Killer sudoku solver
+====================
+REGION is a set of cells having the sum specified in the puzzle. The first
+element in the line is the region sum, while other elements are indices
+of the cells contained in the region. Indices start from 0 at the top left
+corner and increase to the right and bottom. See the following image:
+
+    ----------------
+    |0 |1 |2 |.....
+    ----------------
+    |9 |10|  |.....
+    ---------------
+    ....
+
+NOTE! There must be no empty lines in the file, not even at the end of the
+file. The program will report a file format error otherwise.
+
+Files ks[1-4].txt correspond to gentle, moderate, tricky and tough puzzles
+on the following URL:
+
+http://www.timesonline.co.uk/article/0,,7-1757275,00.html
+
+Take for example the tricky puzzle, and consider the L-shaped region in the
+top-left subgrid that sums to 14: it is described by the following line:
+14 9 18 19
+| |
+| +---> cells contained in the region
+v
+the region sum
+
+Of course, the user interface leaves much to be desired :) This program is
+more of an experiment of how feasible it is to use brute-force method on this
+problem: very feasible. The tricky puzzle is solved in 0.09s on a 2GHz
+Pentium M (when compiled with optimizations).
+
+Kakuro solver
+=============
+http://www.kakuro.com/puzzles.php
+
+The input is simpler than for the previous program. The first line must
+contain the dimensions (rows and columns) of the puzzle, followed by cell
+or run definitions. The definitions are in the following format:
+
+0 1 2
+56 0 0 7 2
+49 3 2 21 6
+
+The first line specifies indices of ALL unfillable cells. Constraint cells
+MUST be omitted in this line.
+
+The following lines specify one or two runs. Each line begins with the
+constraint cell index, followed by two pairs of numbers. The first
+pair of numbers is <SUM,SIZE> for the DOWN run, and the second pair of
+numbers is <SUM,SIZE> for the RIGHT run. SIZE is in the number of
+cells.
+
+Files ka[1-6].txt are examples from http://www.kakuro.com/puzzles.php
+
+If -test is given instead of the file name, it prints the nicely formatted
+G_sum_table to show all possible sum combinations within the constraints
+of the rules.
+
+The program checks the input data for consistency. It will display a variety
+of diagnostic messages. Here I just want to explain the ambiguity in the
+following message kind:
+
+overflowing (down?) run or misplaced constraint cell 78
+
+The cause can be several reasons:
+- overflowing down run starting at cell 78
+- constraint cell misplaced in some other run
+- NON-OBVIOUS: the previous point can be caused by overflowing previous down
+  or right run so that it captures a constraint cell
+
+Incompletely covered cell is a cell which is a member of only one run,
+whereas an uncovered cell is not a member of any run (and was not declared
+as uncoverable).
